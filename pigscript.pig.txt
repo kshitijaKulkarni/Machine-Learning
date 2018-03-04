@@ -1,0 +1,18 @@
+nyse = load 'nyse' as (date:chararray,symbol:chararray, open:float, close:float,low:float, high:float, volume:int);
+
+
+nyse_2016 = filter nyse by (date matches '.*2016.*');
+nyse_2016_grouped = group nyse_2016 by symbol;
+
+nyse_final = foreach nyse_2016_grouped {
+cnt = COUNT(nyse_2016.symbol);
+avgopen = AVG(nyse_2016.open);
+avgclose = AVG(nyse_2016.close);
+minlow = MIN(nyse_2016.low);
+maxhigh = MAX(nyse_2016.high);
+avgvol = AVG(nyse_2016.volume);
+generate group as symbol, cnt as count, avgopen as average_open,avgclose as average_close,minlow as minimum,maxhigh as maximum,
+avgvol as average_volume;
+};
+
+store nyse_final into 'ex7_nyse_final' using PigStorage(',');
